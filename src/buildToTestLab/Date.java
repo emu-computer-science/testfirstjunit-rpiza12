@@ -58,18 +58,19 @@ public class Date
         }
     }
 
-    public void setDate(String monthString, int day, int year)
+    // edited for the lab: return has been updated to Date and the fatal message has been updated to just return null
+    public Date setDate(String monthString, int day, int year)
     {
         if (dateOK(monthString, day, year))
         {
             this.month = monthString;
             this.day = day;
             this.year = year;
+            return this;
         }
         else
         {
-            System.out.println("Fatal Error in setDate(String,int, int)");
-            System.exit(0);
+        	return null;
         }
     }
 
@@ -159,7 +160,7 @@ public class Date
         return (month + " " + day + ", " + year);
     }
     
-    // assertEquals did not use the previous version of equals. edited to override the object method.
+    // edited for lab: assertEquals did not use the previous version of equals. edited to override the object method.
     @Override
     public boolean equals(Object obj)// edited: Date otherDate)
     {
@@ -203,12 +204,21 @@ public class Date
                  (dayInt >= 1) && (dayInt <= 31) &&
                  (yearInt >= 1000) && (yearInt <= 9999) );
     }
-
+    
+    // edited for lab assignment for Months that have 31 days vs 30 days. Also included leap years.
     private boolean dateOK(String monthString, int dayInt, int yearInt)
     {
-        return ( monthOK(monthString) &&
-                 (dayInt >= 1) && (dayInt <= 31) &&
-                 (yearInt >= 1000) && (yearInt <= 9999) );
+        if (!monthOK(monthString) && (yearInt >= 1000) && (yearInt <= 9999)) {
+        	return false;
+        }
+        
+        String origMonth = this.month;
+        this.month = monthString;
+        int monthInInt = getMonth();
+        this.month = origMonth;
+        int maxDay = daysInMonth(monthInInt, yearInt);
+        
+        return dayInt >= 1 && dayInt <= maxDay;
     }
 
     private boolean monthOK(String month)
@@ -258,50 +268,27 @@ public class Date
     
     // added for lab: JUnit Simple Design to Test
     public Date addOneDay() {
-    	System.out.println("Date.addOneDay(): working on implementation.");
-    	if (isLeapYear() && month == "February") {
-    		if (day == 29) {
-    			month = "March";
-    			day = 1;  
-    			return this;
-    		}
-    		else {
-    		day += 1;
-    		return this;
-    		}
-    	}
-    	if (month == "Janurary" || month == "March" || month == "May" || month == "July" || 
-    			month == "August" || month == "October" || month == "December") {
-    		if (day < 31) {
-    		day += 1;
-    		return this;
-    		}
-    		else {
-    			int numMonths = (getMonth() + 1) % 12;
-    			if (numMonths == 0) {
-    				month = "December";
-    				day = 1;
-    				return this;
-    			}
-    			setMonth(numMonths);
-    			day = 1;
-    			return this;
-    		}
-    	}
-    	if (day < 30) {
-    		day += 1;
-    		return this;
-    	}
-    	else {
-    		int numMonths = (getMonth() + 1) % 12;
-    		setMonth(numMonths);
-    		day = 1;
-    		return this;
-    	}
+      int monthInInt = getMonth();
+      int maxNumDays = daysInMonth(monthInInt, year);
+
+      if (day < maxNumDays) {
+      	day += 1;
+      } 
+      else {
+      	day = 1;
+        if (monthInInt == 12) {
+        	month = "January";
+          year += 1;
+          } 
+          else {
+          	setMonth(monthInInt + 1);  
+          }
+      	}
+      return this;
     }
     
-    // helper. added for lab.
-    public boolean isLeapYear() {
+    // added for lab: helper. added for lab to determine leap year.
+    private boolean isLeapYear(int year) {
     	if (year % 100 == 0 && year % 400 == 0) {
     		return true;
     	}
@@ -309,6 +296,18 @@ public class Date
     		return true;
     	}
     	return false;
+    }
+    
+    // added for lab: helper. recommended use of an array daysInMonth to simplify changes.
+    private int daysInMonth(int month, int year) {
+    	// for simplicity index 0 is not used then 1-12 for the corresponding months
+    	int febLeapYear = 29;
+      int[] daysInMonth = { 0, 31, 28, 31, 30, 31,30, 31, 31, 30, 31, 30, 31 };
+      
+      if (month == 2 && isLeapYear(year)) {
+      	return febLeapYear;
+      }
+      return daysInMonth[month];
     }
     
     // notes for lab
@@ -324,20 +323,5 @@ public class Date
         System.out.println("Main in Date.");
         Date tester = new Date();
         System.out.println("tester is "+tester);
-        
-        // everything below added for the lab for basic testing to implement functions addOneDay() and setDate(String, int, int)
-        Date dateA = new Date(7, 14, 1700);  
-        Date dateB = new Date(7, 14, 1600); 
-        Date dateC = new Date(7, 14, 2024);
-        Date dateD = new Date(2, 29, 2024);
-        
-        System.out.println("is leap year? Expecting: false, actual: " + dateA.isLeapYear());
-        System.out.println("is leap year? Expecting: true, actual: " + dateB.isLeapYear());
-        System.out.println("is leap year? Expecting: true, actual: " + dateC.isLeapYear());
-        
-        dateC.addOneDay();
-        System.out.println(dateC);
-        dateD.addOneDay();
-        System.out.println(dateD);
     }
 }
