@@ -158,9 +158,12 @@ public class Date
     {
         return (month + " " + day + ", " + year);
     }
-
-    public boolean equals(Date otherDate)
+    
+    // assertEquals did not use the previous version of equals. edited to override the object method.
+    @Override
+    public boolean equals(Object obj)// edited: Date otherDate)
     {
+    	Date otherDate = (Date) obj; // added
         return ( (month.equals(otherDate.month))
                   && (day == otherDate.day) && (year == otherDate.year) );
     }
@@ -253,14 +256,88 @@ public class Date
         }
     }
     
+    // added for lab: JUnit Simple Design to Test
     public Date addOneDay() {
-    	System.out.println("Date.addOneDay() is not yet implemented.");
-    	return this;
+    	System.out.println("Date.addOneDay(): working on implementation.");
+    	if (isLeapYear() && month == "February") {
+    		if (day == 29) {
+    			month = "March";
+    			day = 1;  
+    			return this;
+    		}
+    		else {
+    		day += 1;
+    		return this;
+    		}
+    	}
+    	if (month == "Janurary" || month == "March" || month == "May" || month == "July" || 
+    			month == "August" || month == "October" || month == "December") {
+    		if (day < 31) {
+    		day += 1;
+    		return this;
+    		}
+    		else {
+    			int numMonths = (getMonth() + 1) % 12;
+    			if (numMonths == 0) {
+    				month = "December";
+    				day = 1;
+    				return this;
+    			}
+    			setMonth(numMonths);
+    			day = 1;
+    			return this;
+    		}
+    	}
+    	if (day < 30) {
+    		day += 1;
+    		return this;
+    	}
+    	else {
+    		int numMonths = (getMonth() + 1) % 12;
+    		setMonth(numMonths);
+    		day = 1;
+    		return this;
+    	}
     }
+    
+    // helper. added for lab.
+    public boolean isLeapYear() {
+    	if (year % 100 == 0 && year % 400 == 0) {
+    		return true;
+    	}
+    	if (year % 4 == 0) {
+    		return true;
+    	}
+    	return false;
+    }
+    
+    // notes for lab
+    // 31 days: January, March, May, July, August, October, December
+    // 30 days: April, June, September, November
+    // 28 days: February
+    // 29 days: February (leap year)
+    // leap year: every year that is exactly divisible by 4.  EXCEPT for years that are exactly divisible by 100.
+    //            But if the centurial years are divisible by 400 then those years ARE leap years.
+    
     
     public static void main(String[] args) {
         System.out.println("Main in Date.");
         Date tester = new Date();
         System.out.println("tester is "+tester);
+        
+        // everything below added for the lab for basic testing to implement functions addOneDay() and setDate(String, int, int)
+        Date dateA = new Date(7, 14, 1700);  
+        Date dateB = new Date(7, 14, 1600); 
+        Date dateC = new Date(7, 14, 2024);
+        Date dateD = new Date(2, 29, 2024);
+        
+        System.out.println("is leap year? Expecting: false, actual: " + dateA.isLeapYear());
+        System.out.println("is leap year? Expecting: true, actual: " + dateB.isLeapYear());
+        System.out.println("is leap year? Expecting: true, actual: " + dateC.isLeapYear());
+        
+        dateC.addOneDay();
+        System.out.println(dateC);
+        dateD.addOneDay();
+        System.out.println(dateD);
     }
 }
