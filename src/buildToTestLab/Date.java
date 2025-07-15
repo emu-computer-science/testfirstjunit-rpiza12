@@ -255,7 +255,7 @@ public class Date
     
     public Date addOneDay() {
     	System.out.println("Date.addOneDay() is not yet implemented.");
-    	return null;
+    	return this;
     }
     
     public static void main(String[] args) {
