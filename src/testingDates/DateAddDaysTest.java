@@ -2,15 +2,31 @@ package testingDates;
 
 import buildToTestLab.Date;
 import org.junit.Test;
+import org.junit.Before;
 import static org.junit.Assert.*;
 
 public class DateAddDaysTest {
+	private Date dateA;
+	private Date dateB;
+	private Date dateC;
+	private Date dateD;
+	private Date dateE;
+	
+	@Before
+	public void setup () throws Exception {
+		dateA = new Date();
+		dateB = new Date();
+		dateC = new Date();
+		dateD = new Date();
+		dateE = new Date();		
+	}
+	
 	@Test
 	public void testAddOneDaySameMonth() {
-		Date dateA = new Date(2, 27, 2025);
-		Date dateB = new Date(2, 28, 2024);
-		Date dateC = new Date(7, 30, 2025);
-		Date dateD = new Date(6, 29, 2025);
+		dateA.setDate(2, 27, 2025);
+		dateB.setDate(2, 28, 2024);
+		dateC.setDate(7, 30, 2025);
+		dateD.setDate(6, 29, 2025);
 		
 		dateA.addOneDay();
 		dateB.addOneDay();
@@ -25,11 +41,11 @@ public class DateAddDaysTest {
 	
 	@Test 
 	public void testAddOneDayCrossMonth() {
-		Date dateA = new Date(7, 31, 2025);
-		Date dateB = new Date(2, 28, 2025);
-		Date dateC = new Date(2, 29, 2024);
-		Date dateD = new Date(7, 31, 2025);
-		Date dateE = new Date(6, 30, 2025);
+		dateA.setDate(7, 31, 2025);
+		dateB.setDate(2, 28, 2025);
+		dateC.setDate(2, 29, 2024);
+		dateD.setDate(7, 31, 2025);
+		dateE.setDate(6, 30, 2025);
 		
 		dateA.addOneDay();
 		assertEquals(new Date(8, 1, 2025), dateA);
@@ -45,8 +61,8 @@ public class DateAddDaysTest {
 	
 	@Test
 	public void testAddOneDayCrossYear() {
-		Date dateA = new Date(12, 31, 2025);
-		Date dateB = new Date(1, 1, 2026);
+		dateA.setDate(12, 31, 2025);
+		dateB.setDate(1, 1, 2026);
 		
 		dateA.addOneDay();
 		assertEquals(dateB, dateA);
